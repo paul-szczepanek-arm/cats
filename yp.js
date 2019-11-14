@@ -423,13 +423,7 @@ class Cat {
 
     if (this.anim_set != new_set) {
       this.anim_set = new_set;
-
-      let range = [];
-      for (let i = CAT_ANIM_RANGE[new_set]; i < CAT_ANIM_RANGE[new_set + 1]; i++) {
-          range.push(i);
-      }
-
-      this.anim.playAnimation(range);
+      this.anim.playAnimation([CAT_ANIM_RANGE[new_set], CAT_ANIM_RANGE[new_set + 1] - 1]);
     }
 
     if (this.anim.scale.x != this.scale) {
@@ -437,7 +431,7 @@ class Cat {
     }
 
     this.anim.x = this.x;
-    this.anim.y = this.y;
+    this.anim.y = this.y + 20;
   }
 
   checkHeads() {
