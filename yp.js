@@ -237,7 +237,7 @@ const CAT_ANIM_TURN = 3;
 const CAT_ANIM_END = 4;
 const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10 ]
 
-const ANIM_INCR = 4;
+const ANIM_TURN_DURATION = 4;
 
 class Cat {
   constructor(id) {
@@ -264,7 +264,7 @@ class Cat {
 
     this.anim.anchor.set(0.5, 1);
     this.anim.show(CAT_ANIM_STAND);
-    this.anim_set = CAT_ANIM_STAND;
+    this.anim_set = CAT_ANIM_TURN;
     this.anim_time = 0;
 
     g.stage.addChild(this.anim);
@@ -400,12 +400,19 @@ class Cat {
     this.gravity();
     this.move();
 
-    let next_frame = false;
+    this.anim.x = this.x;
+    this.anim.y = this.y + 20;
 
-    this.anim_time++;
-    if (this.anim_time > ANIM_INCR) {
-      this.anim_time = 0;
-      next_frame = true;
+    if (this.anim.scale.x != this.scale) {
+      this.anim.scale.x = this.scale;
+      this.anim_time = ANIM_TURN_DURATION;
+      this.anim.playAnimation([CAT_ANIM_RANGE[CAT_ANIM_TURN], CAT_ANIM_RANGE[CAT_ANIM_TURN]]);
+      this.anim_set = CAT_ANIM_TURN;
+    }
+
+    if (this.anim_time > 0) {
+      this.anim_time--;
+      return;
     }
 
     let new_set;
@@ -425,13 +432,6 @@ class Cat {
       this.anim_set = new_set;
       this.anim.playAnimation([CAT_ANIM_RANGE[new_set], CAT_ANIM_RANGE[new_set + 1] - 1]);
     }
-
-    if (this.anim.scale.x != this.scale) {
-      this.anim.scale.x = this.scale;
-    }
-
-    this.anim.x = this.x;
-    this.anim.y = this.y + 20;
   }
 
   checkHeads() {
