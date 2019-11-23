@@ -27,6 +27,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0008_stand2.png',
   'data/cat_0009_turn.png',
   'data/cat_0010_stop.png',
+  'data/cat_0011_prep.png',
 ]);
 
 g.start();
@@ -228,7 +229,7 @@ class Human {
 }
 
 const MAX_SPEED_X = 25;
-const MAX_SPEED_HEAD_X = 5;
+const MAX_SPEED_HEAD_X = 10;
 const ACC_X = 1;
 
 const CAT_ANIM_SIT = 0;
@@ -236,10 +237,11 @@ const CAT_ANIM_RUN = 1;
 const CAT_ANIM_STAND = 2;
 const CAT_ANIM_TURN = 3;
 const CAT_ANIM_STOP = 4;
-const CAT_ANIM_END = 5;
-const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10, 11 ]
+const CAT_ANIM_PREP = 5;
+const CAT_ANIM_END = 6;
+const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10, 11, 12 ]
 
-const ANIM_TURN_DURATION = 4;
+const ANIM_TURN_DURATION = 6;
 
 class Cat {
   constructor(id) {
@@ -262,7 +264,8 @@ class Cat {
       'data/cat_0007_stand1.png',
       'data/cat_0008_stand2.png',
       'data/cat_0009_turn.png',
-      'data/cat_0010_stop.png'
+      'data/cat_0010_stop.png',
+      'data/cat_0011_prep.png'
     ]);
 
     this.anim.anchor.set(0.5, 1);
@@ -422,7 +425,11 @@ class Cat {
     if (this.state == 'jump' || this.state == 'fall') {
       new_set = CAT_ANIM_RUN;
     } else if (this.state == 'head') {
-      new_set = CAT_ANIM_SIT;
+      if (Math.abs(this.speed_x) > 7) {
+        new_set = CAT_ANIM_PREP;
+      } else {
+        new_set = CAT_ANIM_SIT;
+      }
     } else {
       if (this.direction) {
         new_set = CAT_ANIM_RUN;
