@@ -66,10 +66,32 @@ function setup() {
 }
 
 function highScore() {
-  scaleToWindow(document.querySelector("#ui"));
-  window.addEventListener("resize", function(event){
-    scaleToWindow(document.querySelector("#ui"));
-  });
+  //window.location.replace("highscore.html");
+
+  var mapForm = document.createElement("form");
+  mapForm.target = "_blank";
+  mapForm.method = "POST";
+  mapForm.action = "highscore.php";
+
+  // Create an input
+  var mapInput = document.createElement("input");
+  mapInput.type = "text";
+  mapInput.name = "score";
+  mapInput.value = score[0]+score[1];
+
+  // Add the input to the form
+  mapForm.appendChild(mapInput);
+
+  // Add the form to dom
+  document.body.appendChild(mapForm);
+
+  // Just submit
+  mapForm.submit();
+
+}
+
+function buttonClickHandler(event) {
+  console.log(input.value);
 }
 
 function play() {
