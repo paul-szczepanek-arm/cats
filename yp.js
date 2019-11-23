@@ -25,9 +25,11 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0006_run6.png',
   'data/cat_0007_stand1.png',
   'data/cat_0008_stand2.png',
-  'data/cat_0009_turn.png',
-  'data/cat_0010_stop.png',
-  'data/cat_0011_prep.png',
+  'data/cat_0009_stand3.png',
+  'data/cat_0010_stand4.png',
+  'data/cat_0011_turn.png',
+  'data/cat_0012_stop.png',
+  'data/cat_0013_prep.png',
 ]);
 
 g.start();
@@ -239,7 +241,7 @@ const CAT_ANIM_TURN = 3;
 const CAT_ANIM_STOP = 4;
 const CAT_ANIM_PREP = 5;
 const CAT_ANIM_END = 6;
-const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10, 11, 12 ]
+const CAT_ANIM_RANGE = [ 0, 1, 7, 11, 12, 13, 14 ]
 
 const ANIM_TURN_DURATION = 6;
 
@@ -263,9 +265,11 @@ class Cat {
       'data/cat_0006_run6.png',
       'data/cat_0007_stand1.png',
       'data/cat_0008_stand2.png',
-      'data/cat_0009_turn.png',
-      'data/cat_0010_stop.png',
-      'data/cat_0011_prep.png'
+      'data/cat_0009_stand3.png',
+      'data/cat_0010_stand4.png',
+      'data/cat_0011_turn.png',
+      'data/cat_0012_stop.png',
+      'data/cat_0013_prep.png'
     ]);
 
     this.anim.anchor.set(0.5, 1);
@@ -424,7 +428,9 @@ class Cat {
     let new_set;
     if (this.state == 'jump' || this.state == 'fall') {
       new_set = CAT_ANIM_RUN;
+      this.anim.fps = 4;
     } else if (this.state == 'head') {
+      this.anim.fps = 4;
       if (Math.abs(this.speed_x) > 7) {
         new_set = CAT_ANIM_PREP;
       } else {
@@ -432,11 +438,14 @@ class Cat {
       }
     } else {
       if (this.direction) {
+        this.anim.fps = 12;
         new_set = CAT_ANIM_RUN;
       } else if (Math.abs(this.speed_x) > 5) {
         new_set = CAT_ANIM_STOP;
+        this.anim.fps = 4;
       } else {
         new_set = CAT_ANIM_STAND;
+        this.anim.fps = 4;
       }
     }
 
