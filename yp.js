@@ -26,6 +26,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0007_stand1.png',
   'data/cat_0008_stand2.png',
   'data/cat_0009_turn.png',
+  'data/cat_0010_stop.png',
 ]);
 
 g.start();
@@ -234,8 +235,9 @@ const CAT_ANIM_SIT = 0;
 const CAT_ANIM_RUN = 1;
 const CAT_ANIM_STAND = 2;
 const CAT_ANIM_TURN = 3;
-const CAT_ANIM_END = 4;
-const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10 ]
+const CAT_ANIM_STOP = 4;
+const CAT_ANIM_END = 5;
+const CAT_ANIM_RANGE = [ 0, 1, 7, 9, 10, 11 ]
 
 const ANIM_TURN_DURATION = 4;
 
@@ -259,7 +261,8 @@ class Cat {
       'data/cat_0006_run6.png',
       'data/cat_0007_stand1.png',
       'data/cat_0008_stand2.png',
-      'data/cat_0009_turn.png'
+      'data/cat_0009_turn.png',
+      'data/cat_0010_stop.png'
     ]);
 
     this.anim.anchor.set(0.5, 1);
@@ -423,6 +426,8 @@ class Cat {
     } else {
       if (this.direction) {
         new_set = CAT_ANIM_RUN;
+      } else if (Math.abs(this.speed_x) > 5) {
+        new_set = CAT_ANIM_STOP;
       } else {
         new_set = CAT_ANIM_STAND;
       }
