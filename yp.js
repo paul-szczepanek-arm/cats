@@ -51,6 +51,8 @@ var people = [];
 
 function setup() {
   pointer = t.makePointer();
+  mouse_down = false;
+  mouse_below_line = false;
 
   createStage();
 
@@ -77,7 +79,7 @@ function highScore() {
   var mapInput = document.createElement("input");
   mapInput.type = "text";
   mapInput.name = "score";
-  mapInput.value = score[0]+score[1];
+  mapInput.value = score[0] + score[1];
 
   // Add the input to the form
   mapForm.appendChild(mapInput);
@@ -94,8 +96,34 @@ function buttonClickHandler(event) {
   console.log(input.value);
 }
 
+var mouse_down;
+const MOUSE_JUMP_LINE = SCREEN_H - 400;
+var mouse_below_line;
+
 function play() {
   t.update();
+
+  if (pointer.isUp && mouse_down) {
+    mouse_down = false;
+    rupert.jump();
+    rupert.setDirection(0);
+  }
+
+  if (pointer.isDown) {
+    mouse_down = true;
+    if (rupert.x - pointer.x > 10) {
+      rupert.setDirection(-1);
+    } else if (rupert.x - pointer.x < -10) {
+      rupert.setDirection(1);
+    }
+
+    if (pointer.y > MOUSE_JUMP_LINE) {
+      mouse_below_line = true;
+    } else if (mouse_below_line) {
+      mouse_below_line = false;
+      rupert.jump();
+    }
+  }
 
   rupert.update();
   carl.update();
@@ -332,31 +360,31 @@ class Cat {
     }
 
     this.key_left.press = function() {
-      self.setirection(-1);
+      self.setDirection(-1);
     }
 
     this.key_left.release = function() {
       if (self.key_right.isDown == true) {
-        self.setirection(1);
+        self.setDirection(1);
       } else {
-        self.setirection(0);
+        self.setDirection(0);
       }
     }
 
     this.key_right.press = function() {
-      self.setirection(1);
+      self.setDirection(1);
     }
 
     this.key_right.release = function() {
       if (self.key_left.isDown == true) {
-        self.setirection(-1);
+        self.setDirection(-1);
       } else {
-        self.setirection(0);
+        self.setDirection(0);
       }
     }
   }
 
-  setirection(distance) {
+  setDirection(distance) {
     if (distance < 0) {
       this.scale = -1;
     } else if (distance > 0) {
