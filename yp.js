@@ -435,7 +435,6 @@ class Cat {
       } else {
         this.speed_x += ACC_X * this.direction;
       }
-      console.log("this.speed_x "+this.speed_x);
 
       if (this.speed_x > max_speed) {
         this.speed_x = max_speed;
