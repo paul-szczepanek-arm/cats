@@ -51,6 +51,8 @@ var people = [];
 
 function setup() {
   pointer = t.makePointer();
+  mouse_down = false;
+  mouse_below_line = false;
 
   createStage();
 
@@ -77,7 +79,7 @@ function highScore() {
   var mapInput = document.createElement("input");
   mapInput.type = "text";
   mapInput.name = "score";
-  mapInput.value = score[0]+score[1];
+  mapInput.value = score[0] + score[1];
 
   // Add the input to the form
   mapForm.appendChild(mapInput);
@@ -94,8 +96,36 @@ function buttonClickHandler(event) {
   console.log(input.value);
 }
 
+var mouse_down;
+const MOUSE_JUMP_LINE = SCREEN_H - 250;
+var mouse_below_line;
+
 function play() {
   t.update();
+
+  if (pointer.isUp && mouse_down) {
+    mouse_down = false;
+    rupert.jump();
+    rupert.setDirection(0);
+  }
+
+  if (pointer.isDown) {
+    mouse_down = true;
+    let delta_p = rupert.x - pointer.x;
+    let abs_delta_p = Math.abs(delta_p);
+    if (abs_delta_p > 15) {
+      abs_delta_p = Math.min(400, abs_delta_p);
+      abs_delta_p = Math.max(40, abs_delta_p);
+      rupert.setDirection(-Math.sign(delta_p) * (abs_delta_p / 400));
+    }
+
+    if (pointer.y > MOUSE_JUMP_LINE) {
+      mouse_below_line = true;
+    } else if (mouse_below_line) {
+      mouse_below_line = false;
+      rupert.jump();
+    }
+  }
 
   rupert.update();
   carl.update();
@@ -332,31 +362,31 @@ class Cat {
     }
 
     this.key_left.press = function() {
-      self.setirection(-1);
+      self.setDirection(-1);
     }
 
     this.key_left.release = function() {
       if (self.key_right.isDown == true) {
-        self.setirection(1);
+        self.setDirection(1);
       } else {
-        self.setirection(0);
+        self.setDirection(0);
       }
     }
 
     this.key_right.press = function() {
-      self.setirection(1);
+      self.setDirection(1);
     }
 
     this.key_right.release = function() {
       if (self.key_left.isDown == true) {
-        self.setirection(-1);
+        self.setDirection(-1);
       } else {
-        self.setirection(0);
+        self.setDirection(0);
       }
     }
   }
 
-  setirection(distance) {
+  setDirection(distance) {
     if (distance < 0) {
       this.scale = -1;
     } else if (distance > 0) {
@@ -396,17 +426,19 @@ class Cat {
     let max_speed = MAX_SPEED_X;
 
     if (this.state == 'head') {
-      max_speed = MAX_SPEED_HEAD_X;
+      max_speed = MAX_SPEED_HEAD_X * Math.abs(this.direction);
     }
 
-    if (this.direction > 0) {
-      this.speed_x += ACC_X;
+    if (Math.abs(this.direction) > 0) {
+      if (this.direction > 0 && this.speed_x < 0) {
+        this.speed_x += ACC_X * Math.sign(this.direction);
+      } else {
+        this.speed_x += ACC_X * this.direction;
+      }
+
       if (this.speed_x > max_speed) {
         this.speed_x = max_speed;
-      }
-    } else if (this.direction < 0) {
-      this.speed_x -= ACC_X;
-      if (this.speed_x < -max_speed) {
+      } else if (this.speed_x < -max_speed) {
         this.speed_x = -max_speed;
       }
     } else {
@@ -414,6 +446,9 @@ class Cat {
         this.speed_x += ACC_X;
       } else if (this.speed_x > 0) {
         this.speed_x -= ACC_X;
+      }
+      if (Math.abs(this.speed_x) < 1) {
+        this.speed_x = 0;
       }
     }
 
