@@ -13,6 +13,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human3.png',
   'data/human4.png',
   'data/human5.png',
+  'data/human6.png',
   'data/bg.png',
   'data/fence.png',
   'data/hat.png',
@@ -31,6 +32,11 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0012_stop1.png',
   'data/cat_0013_stop2.png',
   'data/cat_0014_prep.png',
+  'data/splash.png',
+  'data/score.png',
+  'data/rank.png',
+  'data/time_bar1.png',
+  'data/time_bar2.png',
 ]);
 
 g.start();
@@ -48,6 +54,7 @@ var score = [0, 0];
 var bkgd;
 var fence;
 var people = [];
+var splash_screen;
 
 function setup() {
   pointer = t.makePointer();
@@ -64,32 +71,30 @@ function setup() {
 
   createScore();
 
-  g.state = play;
+  splash_screen = g.sprite('data/splash.png');
+  splash_screen.x = 0;
+  splash_screen.y = 0;
+  splash_screen.scale.x = splash_screen.scale.y = (1080 / 512);
+
+  g.state = splash;
 }
 
-function highScore() {
-  //window.location.replace("highscore.html");
+var popup = false;
 
+function highScore() {
   var mapForm = document.createElement("form");
   mapForm.target = "_blank";
   mapForm.method = "POST";
   mapForm.action = "highscore.php";
 
-  // Create an input
   var mapInput = document.createElement("input");
   mapInput.type = "text";
   mapInput.name = "score";
   mapInput.value = score[0] + score[1];
 
-  // Add the input to the form
   mapForm.appendChild(mapInput);
-
-  // Add the form to dom
   document.body.appendChild(mapForm);
-
-  // Just submit
   mapForm.submit();
-
 }
 
 function buttonClickHandler(event) {
@@ -99,6 +104,20 @@ function buttonClickHandler(event) {
 var mouse_down;
 const MOUSE_JUMP_LINE = SCREEN_H - 250;
 var mouse_below_line;
+
+function splash() {
+  if (pointer.isDown) {
+    mouse_down = true;
+  }
+
+  if (rupert_playing || carl_playing || pointer.isUp && mouse_down) {
+    splash_screen.visible = false;
+    g.state = play;
+  }
+}
+
+var rupert_playing = false;
+var carl_playing = false;
 
 function play() {
   t.update();
@@ -110,6 +129,11 @@ function play() {
   }
 
   if (pointer.isDown) {
+
+    if (!rupert_playing) {
+      rupert_playing = true;
+    }
+
     mouse_down = true;
     let delta_p = rupert.x - pointer.x;
     let abs_delta_p = Math.abs(delta_p);
@@ -127,10 +151,16 @@ function play() {
     }
   }
 
-  rupert.update();
-  carl.update();
+  if (rupert_playing) {
+    rupert.update();
+  }
+
+  if (carl_playing) {
+    carl.update();
+  }
 
   updateScore();
+  updateTime();
 
   for (let i = 0; i < people.length; i++) {
     people[i].update();
@@ -138,9 +168,27 @@ function play() {
 
 }
 
+function gameover() {
+  var game_over = g.sprite('data/rank.png');
+
+  game_over.x = SCREEN_W / 2;
+  game_over.y = SCREEN_H / 2;
+  game_over.anchor.set(0.5, 0.5);
+
+  if (pointer.isDown) {
+    mouse_down = true;
+  }
+
+  if (pointer.isUp && mouse_down && !popup) {
+    console.log("popup");
+    popup = true;
+    highScore();
+  }
+}
+
 function createStage() {
-  bkgd = g.sprite('data/bg.png', 1024, 512);
-  fence = g.sprite('data/fence.png', 1920, 86);
+  bkgd = g.sprite('data/bg.png');
+  fence = g.sprite('data/fence.png');
 
   g.stage.addChild(bkgd);
   bkgd.x = 0;
@@ -156,14 +204,62 @@ function createStage() {
   fence.y = SCREEN_H - 86;
 }
 
+var score_bg1;
+var score_bg2;
+var time_bar_bg;
+var time_bar;
+const MAX_TIME = 60;
+var timer = MAX_TIME;
+
 function createScore() {
-  score_display1 = g.text("score", "40px sans", "black", SCREEN_W / 2, 100);
-  score_display2 = g.text("score", "40px sans", "black", SCREEN_W / 2, 200);
+  time_bar_bg = g.sprite('data/time_bar1.png');
+  time_bar = g.sprite('data/time_bar2.png', 0, 0, true, 900, 60, 900, 60);
+  time_bar_bg.x = SCREEN_W / 2 - 450;
+  time_bar_bg.y = 80;
+  time_bar.x = SCREEN_W / 2 - 450;
+  time_bar.y = 80;
+  time_bar_bg.anchor.set(0, 0.5);
+  time_bar.anchor.set(0, 0.5);
+}
+
+function updateTime() {
+  timer -= (1 / 60);
+  console.log(timer);
+  time_bar.width = 900 * (timer / MAX_TIME);
+  if (timer <= 0) {
+    mouse_down = false;
+    g.state = gameover;
+  }
 }
 
 function updateScore() {
-  score_display1.content = "rupert: " + score[0];
-  score_display2.content = "carl: " + score[1];
+  if (rupert_playing) {
+    if (!score_bg1) {
+      score_bg1 = g.sprite('data/score.png');
+      score_bg1.anchor.set(0.5, 0.5);
+      score_bg1.x = 260;
+      score_bg1.y = 80;
+      score_display1 = g.text("score", "40px sans", "black", SCREEN_W / 2, 100);
+      score_display1.x = 260;
+      score_display1.y = 80;
+      score_display1.anchor.set(0.5, 0.5);
+    }
+    score_display1.content = "RUPERT " + score[0];
+  }
+
+  if (carl_playing) {
+    if (!score_bg2) {
+      score_bg2 = g.sprite('data/score.png');
+      score_bg2.anchor.set(0.5, 0.5);
+      score_bg2.x = SCREEN_W - 260;
+      score_bg2.y = 80;
+      score_display2 = g.text("score", "40px sans", "black", SCREEN_W / 2, 200);
+      score_display2.x = SCREEN_W - 260;
+      score_display2.y = 80;
+      score_display2.anchor.set(0.5, 0.5);
+    }
+    score_display2.content = "CARL " + score[1];
+  }
 }
 
 let human_id = 0;
@@ -172,7 +268,7 @@ class Human {
   constructor() {
     // image
     this.id = human_id++;
-    let human_int = 1 + this.id % 5; // change this number when more humans added
+    let human_int = 1 + this.id % 6; // change this number when more humans added
     this.sprite = g.sprite('data/human' + human_int + '.png', 256, 512);
 
     this.sprite.anchor.set(0.5, 0);
@@ -301,18 +397,18 @@ const CAT_ANIM_TURN = 3;
 const CAT_ANIM_STOP = 4;
 const CAT_ANIM_PREP = 5;
 const CAT_ANIM_END = 6;
-const CAT_ANIM_RANGE = [ 0, 1, 7, 11, 12, 14, 15 ]
+const CAT_ANIM_RANGE = [0, 1, 7, 11, 12, 14, 15]
 
-const ANIM_TURN_DURATION = 6;
+const ANIM_TURN_DURATION = 8;
 
 class Cat {
   constructor(id) {
     this.id = id;
     // image
     if (id == 0) {
-      this.x = 200;
+      this.x = SCREEN_W / 2 - 200;
     } else if (id == 1) {
-      this.x = SCREEN_W - 200;
+      this.x = SCREEN_W / 2 + 200;
     }
 
     this.anim = g.sprite([
@@ -341,10 +437,10 @@ class Cat {
     g.stage.addChild(this.anim);
 
     // location
-    this.y = FENCE_H;
+    this.y = -256;
     this.speed_x = 0;
     this.speed_y = 0;
-    this.state = 'ground';
+    this.state = 'fall';
     this.human = -1;
     this.direction = 0;
     this.scale = 1;
@@ -386,6 +482,14 @@ class Cat {
     }
   }
 
+  spawn() {
+    if (this.id == 0 && !rupert_playing) {
+      rupert_playing = true;
+    } else if (this.id == 1 && !carl_playing) {
+      carl_playing = true;
+    }
+  }
+
   setDirection(distance) {
     if (distance < 0) {
       this.scale = -1;
@@ -393,6 +497,7 @@ class Cat {
       this.scale = 1;
     }
     this.direction = distance;
+    this.spawn();
   }
 
   jump() {
@@ -404,6 +509,7 @@ class Cat {
       this.state = 'jump';
       this.speed_y -= 45;
     }
+    this.spawn();
   }
 
   gravity() {
