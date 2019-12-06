@@ -168,6 +168,8 @@ function play() {
 
 }
 
+var mouse_down_game_over = false;
+
 function gameover() {
   var game_over = g.sprite('data/rank.png');
 
@@ -175,14 +177,16 @@ function gameover() {
   game_over.y = SCREEN_H / 2;
   game_over.anchor.set(0.5, 0.5);
 
-  if (pointer.isDown) {
-    mouse_down = true;
+  if (pointer.isDown && !mouse_down) {
+    mouse_down_game_over = true;
   }
 
-  if (pointer.isUp && mouse_down && !popup) {
-    console.log("popup");
-    popup = true;
-    highScore();
+  if (pointer.isUp && mouse_down) {
+    mouse_down = false;
+    if (mouse_down_game_over && !popup) {
+      popup = true;
+      highScore();
+    }
   }
 }
 
@@ -227,7 +231,6 @@ function updateTime() {
   console.log(timer);
   time_bar.width = 900 * (timer / MAX_TIME);
   if (timer <= 0) {
-    mouse_down = false;
     g.state = gameover;
   }
 }
