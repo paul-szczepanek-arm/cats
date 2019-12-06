@@ -2,7 +2,7 @@
 
 const SCREEN_W = 1920;
 const SCREEN_H = 1080;
-const FENCE_H = SCREEN_H - 50;
+const FENCE_H = SCREEN_H - 65;
 const SCREEN_MARGIN = 128;
 const PEOPLE_CLOSE_DISTANCE = 512;
 const PEOPLE_OFF_SCREEN = 4000;
@@ -171,6 +171,7 @@ function play() {
 var mouse_down_game_over = false;
 
 function gameover() {
+  t.update();
   var game_over = g.sprite('data/rank.png');
 
   game_over.x = SCREEN_W / 2;
@@ -181,7 +182,7 @@ function gameover() {
     mouse_down_game_over = true;
   }
 
-  if (pointer.isUp && mouse_down) {
+  if (pointer.isUp) {
     mouse_down = false;
     if (mouse_down_game_over && !popup) {
       popup = true;
@@ -228,7 +229,6 @@ function createScore() {
 
 function updateTime() {
   timer -= (1 / 60);
-  console.log(timer);
   time_bar.width = 900 * (timer / MAX_TIME);
   if (timer <= 0) {
     g.state = gameover;
