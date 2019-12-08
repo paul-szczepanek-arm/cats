@@ -16,7 +16,8 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human6.png',
   'data/bg.png',
   'data/fence.png',
-  'data/hat.png',
+  'data/hat1.png',
+  'data/hat2.png',
   'data/cat_0000_sit.png',
   'data/cat_0001_run1.png',
   'data/cat_0002_run2.png',
@@ -302,14 +303,18 @@ class Human {
   }
 
   makeHat() {
-    this.hat_sprite = g.sprite('data/hat.png', 512, 512);
+    if (Math.random() > 0.5) {
+      this.hat_sprite = g.sprite('data/hat1.png', 512, 512);
+    } else {
+      this.hat_sprite = g.sprite('data/hat2.png', 512, 512);
+    }
     this.hat_sprite.anchor.set(0.5, 0.5);
     g.stage.addChild(this.hat_sprite);
   }
 
   dropHat(speed_x) {
     this.hat_on_head = false;
-    this.hat_speed_x = 2 * speed_x;
+    this.hat_speed_x = 2 * speed_x + Math.random() * 20 - 10;
   }
 
   walk() {
@@ -375,17 +380,19 @@ class Human {
     this.walk();
     this.bob();
 
-    this.sprite.x = this.x;
-    this.sprite.y = this.y;
-
     if (this.hat_on_head == true) {
-      this.hat_sprite.x = this.x;
-      this.hat_sprite.y = this.y;
+      this.hat_sprite.rotation = (this.hat_sprite.y - this.sprite.y) / 100;
+      this.hat_sprite.x = this.sprite.x;
+      this.hat_sprite.y = this.sprite.y;
     } else {
       this.hat_sprite.x += this.hat_speed_x;
       this.hat_speed_x *= 0.9;
       this.hat_sprite.y += 10;
+      this.hat_sprite.rotation += this.hat_speed_x / 100;
     }
+
+    this.sprite.x = this.x;
+    this.sprite.y = this.y;
   }
 }
 
@@ -617,7 +624,7 @@ class Cat {
         new_set = CAT_ANIM_RUN;
       } else if (Math.abs(this.speed_x) > 5) {
         new_set = CAT_ANIM_STOP;
-        this.anim.fps = 4;
+        this.anim.fps = 8;
       } else {
         new_set = CAT_ANIM_STAND;
         this.anim.fps = 4;
