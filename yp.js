@@ -15,6 +15,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human5.png',
   'data/human6.png',
   'data/bg.png',
+  'data/bg0.png',
   'data/fence.png',
   'data/hat1.png',
   'data/hat2.png',
@@ -36,6 +37,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/splash.png',
   'data/score.png',
   'data/rank.png',
+  'data/title.png',
   'data/time_bar1.png',
   'data/time_bar2.png',
   'data/p1.png',
@@ -46,6 +48,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/point3.png',
   'data/point4.png',
   'data/combo.png',
+  'data/dither.png',
 ]);
 
 g.start();
@@ -64,6 +67,8 @@ var bkgd;
 var fence;
 var people = [];
 var splash_screen;
+var title_screen;
+var bkgd0;
 
 function setup() {
   pointer = t.makePointer();
@@ -78,10 +83,18 @@ function setup() {
   rupert.addControlKeys(87, 65, 68);
   carl.addControlKeys(73, 74, 76);
 
+  bkgd0.x = bkgd0.y = 0;
+  bkgd0.scale.x = bkgd0.scale.y = (1080 / 512);
+
   splash_screen = g.sprite('data/splash.png');
-  splash_screen.x = 0;
-  splash_screen.y = 0;
-  splash_screen.scale.x = splash_screen.scale.y = (1080 / 512);
+  title_screen = g.sprite('data/title.png');
+
+  splash_screen.x = title_screen.x = SCREEN_W / 2;
+  splash_screen.y = 1100;
+  title_screen.y = 430;
+  splash_screen.anchor.set(0.5, 0.5);
+  title_screen.anchor.set(0.5, 0.5);
+  splash_screen.alpha = 0;
 
   g.state = splash;
 }
@@ -111,6 +124,7 @@ function buttonClickHandler(event) {
 var mouse_down;
 const MOUSE_JUMP_LINE = SCREEN_H - 250;
 var mouse_below_line;
+var splash_timer = 0;
 
 function splash() {
   if (pointer.isDown) {
@@ -119,15 +133,30 @@ function splash() {
 
   if (rupert_playing || carl_playing || pointer.isUp && mouse_down) {
     splash_screen.visible = false;
+    title_screen.visible = false;
     createScore();
     g.state = play;
   }
+
+  if (splash_timer > 120) {
+    if (splash_screen.alpha < 1) {
+      splash_screen.alpha += 0.01;
+      splash_screen.y -= 4;
+      title_screen.y -= 2;
+    }
+  } else {
+    splash_timer += 1;
+  }
+
 }
 
 var rupert_playing = false;
 var carl_playing = false;
 
 function play() {
+  if (bkgd0.alpha > 0) {
+    bkgd0.alpha -= 0.05;
+  }
   t.update();
 
   if (pointer.isUp && mouse_down) {
@@ -173,18 +202,27 @@ function play() {
   for (let i = 0; i < people.length; i++) {
     people[i].update();
   }
-
 }
 
 var mouse_down_game_over = false;
+var dither;
+var game_over;
 
 function gameover() {
   t.update();
-  var game_over = g.sprite('data/rank.png');
 
-  game_over.x = SCREEN_W / 2;
-  game_over.y = SCREEN_H / 2;
-  game_over.anchor.set(0.5, 0.5);
+  if (!game_over) {
+    dither = g.sprite('data/dither.png', 0, 0, true, 1920, 1080, 1920, 1800);
+    dither.alpha = 0;
+
+    game_over = g.sprite('data/rank.png');
+    game_over.x = SCREEN_W / 2;
+    game_over.y = SCREEN_H / 2;
+    game_over.anchor.set(0.5, 0.5);
+
+    rupert.anim.stopAnimation();
+    carl.anim.stopAnimation();
+  }
 
   if (pointer.isDown && !mouse_down) {
     mouse_down_game_over = true;
@@ -197,13 +235,17 @@ function gameover() {
       highScore();
     }
   }
+  if (dither.alpha < 1) {
+    dither.alpha += 0.1;
+  } else {
+    dither.alpha = 1;
+  }
 }
 
 function createStage() {
   bkgd = g.sprite('data/bg.png');
-  fence = g.sprite('data/fence.png');
+  bkgd0 = g.sprite('data/bg0.png');
 
-  g.stage.addChild(bkgd);
   bkgd.x = 0;
   bkgd.y = 0;
   bkgd.scale.x = bkgd.scale.y = (1080 / 512);
@@ -212,11 +254,14 @@ function createStage() {
     people.push(new Human());
   }
 
-  g.stage.addChild(fence);
+  fence = g.sprite('data/fence.png');
+
+
   fence.x = 0;
   fence.y = SCREEN_H - 86;
 
   for (let i = 0; i < people.length; i++) {
+    people[i].update();
     people[i].update();
   }
 }
@@ -226,7 +271,7 @@ var score_bg2;
 var time_bar_bg;
 var time_bar;
 const MAX_TIME = 60;
-var timer = MAX_TIME;
+var timer = 3;
 
 var points = [];
 var combos = [];
@@ -268,7 +313,7 @@ function createScore() {
   combos[2+3] = g.sprite('data/p3.png');
   resetCombo(0);
   resetCombo(1);
-  for (let index = 0; index < 4; ++index) {
+  for (let index = 0; index < 6; ++index) {
     combos[index].y = COMBO_Y;
   }
   for (let index = 0; index < 3; ++index) {
@@ -334,10 +379,10 @@ function updateScore() {
 
   for (let index = 0; index < points.length; ++index) {
       if (points[index].alpha > 0) {
-        if (points[index].alpha < 0.9) {
-          points[index].alpha -= 0.025;
+        if (points[index].alpha < 0.95) {
+          points[index].alpha -= 0.05;
         } else {
-          points[index].alpha -= 0.001;
+          points[index].alpha -= 0.0025;
         }
         points[index].scale.x = points[index].scale.y += 0.005;
         points[index].y -= 1;
@@ -348,9 +393,16 @@ function updateScore() {
 var combo_values = [1, 1];
 
 function addScore(id) {
+  let x = 0;
+  if (id == 0) {
+    x = rupert.x;
+  } else {
+    x = carl.x;
+  }
   points[combo_values[id] + id * 3 - 1].alpha = 1;
   points[combo_values[id] + id * 3 - 1].visible = true;
-  points[combo_values[id] + id * 3 - 1].y = SCORE_Y + 40;
+  points[combo_values[id] + id * 3 - 1].y = 500;
+  points[combo_values[id] + id * 3 - 1].x = x;
   points[combo_values[id] + id * 3 - 1].scale.x = 1;
   points[combo_values[id] + id * 3 - 1].scale.y = 1;
   score[id] += combo_values[id];
@@ -393,7 +445,7 @@ class Human {
     }
 
     this.x = x;
-    this.y = getRandomInt(SCREEN_H - 450, SCREEN_H - 350);
+    this.y = getRandomInt(SCREEN_H - 500, SCREEN_H - 400);
     this.base_y = this.y;
     this.y -= 10;
 
