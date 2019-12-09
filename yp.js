@@ -271,7 +271,7 @@ var score_bg2;
 var time_bar_bg;
 var time_bar;
 const MAX_TIME = 60;
-var timer = 3;
+var timer = MAX_TIME;
 
 var points = [];
 var combos = [];
