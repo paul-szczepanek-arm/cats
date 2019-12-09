@@ -5,7 +5,7 @@ const SCREEN_H = 1080;
 const FENCE_H = SCREEN_H - 65;
 const SCREEN_MARGIN = 128;
 const PEOPLE_CLOSE_DISTANCE = 512;
-const PEOPLE_OFF_SCREEN = 4000;
+const PEOPLE_OFF_SCREEN = 5000;
 
 var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human1.png',
@@ -38,10 +38,18 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/rank.png',
   'data/time_bar1.png',
   'data/time_bar2.png',
+  'data/p1.png',
+  'data/p2.png',
+  'data/p3.png',
+  'data/point1.png',
+  'data/point2.png',
+  'data/point3.png',
+  'data/point4.png',
+  'data/combo.png',
 ]);
 
 g.start();
-g.backgroundColor = 'white';
+g.backgroundColor = "#c5a8aa";
 g.scaleToWindow();
 
 var t = new Tink(PIXI, g.renderer.view, g.scale);
@@ -69,8 +77,6 @@ function setup() {
 
   rupert.addControlKeys(87, 65, 68);
   carl.addControlKeys(73, 74, 76);
-
-  createScore();
 
   splash_screen = g.sprite('data/splash.png');
   splash_screen.x = 0;
@@ -113,6 +119,7 @@ function splash() {
 
   if (rupert_playing || carl_playing || pointer.isUp && mouse_down) {
     splash_screen.visible = false;
+    createScore();
     g.state = play;
   }
 }
@@ -201,13 +208,17 @@ function createStage() {
   bkgd.y = 0;
   bkgd.scale.x = bkgd.scale.y = (1080 / 512);
 
-  for (let k = 0; k < 20; k++) {
+  for (let k = 0; k < 30; k++) {
     people.push(new Human());
   }
 
   g.stage.addChild(fence);
   fence.x = 0;
   fence.y = SCREEN_H - 86;
+
+  for (let i = 0; i < people.length; i++) {
+    people[i].update();
+  }
 }
 
 var score_bg1;
@@ -216,6 +227,13 @@ var time_bar_bg;
 var time_bar;
 const MAX_TIME = 60;
 var timer = MAX_TIME;
+
+var points = [];
+var combos = [];
+var combo_labels = [];
+
+const COMBO_Y = 120;
+const SCORE_Y = 40;
 
 function createScore() {
   time_bar_bg = g.sprite('data/time_bar1.png');
@@ -226,6 +244,55 @@ function createScore() {
   time_bar.y = 80;
   time_bar_bg.anchor.set(0, 0.5);
   time_bar.anchor.set(0, 0.5);
+
+  score_bg1 = g.sprite('data/score.png');
+  score_bg2 = g.sprite('data/score.png');
+  score_bg1.visible = false;
+  score_bg2.visible = false;
+
+  combo_labels[0] = g.sprite('data/combo.png');
+  combo_labels[1] = g.sprite('data/combo.png');
+  points[0] = g.sprite('data/point1.png');
+  points[1] = g.sprite('data/point2.png');
+  points[2] = g.sprite('data/point3.png');
+  points[3] = g.sprite('data/point4.png');
+  points[4+0] = g.sprite('data/point1.png');
+  points[4+1] = g.sprite('data/point2.png');
+  points[4+2] = g.sprite('data/point3.png');
+  points[4+3] = g.sprite('data/point4.png');
+  combos[0] = g.sprite('data/p1.png');
+  combos[1] = g.sprite('data/p2.png');
+  combos[2] = g.sprite('data/p3.png');
+  combos[0+3] = g.sprite('data/p1.png');
+  combos[1+3] = g.sprite('data/p2.png');
+  combos[2+3] = g.sprite('data/p3.png');
+  resetCombo(0);
+  resetCombo(1);
+  for (let index = 0; index < 4; ++index) {
+    combos[index].y = COMBO_Y;
+  }
+  for (let index = 0; index < 3; ++index) {
+    combos[index].x = 440;
+  }
+  for (let index = 0; index < 3; ++index) {
+    combos[index+3].x = SCREEN_W - 440 - 92;
+  }
+  for (let index = 0; index < 6; ++index) {
+    points[index].y = SCORE_Y;
+    points[index].alpha = 0;
+    points[index].visible = false;
+    points[index].anchor.set(0.5, 0.5);
+  }
+  for (let index = 0; index < 4; ++index) {
+    points[index].x = 360;
+  }
+  for (let index = 0; index < 4; ++index) {
+    points[index+4].x = SCREEN_W - 360 - 92;
+  }
+  combo_labels[0].x = 0;
+  combo_labels[0].y = COMBO_Y;
+  combo_labels[1].x = SCREEN_W - 440;
+  combo_labels[1].y = COMBO_Y;
 }
 
 function updateTime() {
@@ -238,8 +305,8 @@ function updateTime() {
 
 function updateScore() {
   if (rupert_playing) {
-    if (!score_bg1) {
-      score_bg1 = g.sprite('data/score.png');
+    if (!score_display1) {
+      score_bg1.visible = true;
       score_bg1.anchor.set(0.5, 0.5);
       score_bg1.x = 260;
       score_bg1.y = 80;
@@ -252,8 +319,8 @@ function updateScore() {
   }
 
   if (carl_playing) {
-    if (!score_bg2) {
-      score_bg2 = g.sprite('data/score.png');
+    if (!score_display2) {
+      score_bg2.visible = true;
       score_bg2.anchor.set(0.5, 0.5);
       score_bg2.x = SCREEN_W - 260;
       score_bg2.y = 80;
@@ -264,6 +331,44 @@ function updateScore() {
     }
     score_display2.content = "CARL " + score[1];
   }
+
+  for (let index = 0; index < points.length; ++index) {
+      if (points[index].alpha > 0) {
+        if (points[index].alpha < 0.9) {
+          points[index].alpha -= 0.025;
+        } else {
+          points[index].alpha -= 0.001;
+        }
+        points[index].scale.x = points[index].scale.y += 0.005;
+        points[index].y -= 1;
+      }
+  }
+}
+
+var combo_values = [1, 1];
+
+function addScore(id) {
+  points[combo_values[id] + id * 3 - 1].alpha = 1;
+  points[combo_values[id] + id * 3 - 1].visible = true;
+  points[combo_values[id] + id * 3 - 1].y = SCORE_Y + 40;
+  points[combo_values[id] + id * 3 - 1].scale.x = 1;
+  points[combo_values[id] + id * 3 - 1].scale.y = 1;
+  score[id] += combo_values[id];
+  if (combo_values[id] < 4) {
+    combo_values[id] += 1;
+    combo_labels[id].visible = true;
+    combos[id * 3 + 0].visible = (combo_values[id] == 2);
+    combos[id * 3 + 1].visible = (combo_values[id] == 3);
+    combos[id * 3 + 2].visible = (combo_values[id] == 4);
+  }
+}
+
+function resetCombo(id) {
+  combo_labels[id].visible = false;
+  combos[id * 3 + 0].visible = false;
+  combos[id * 3 + 1].visible = false;
+  combos[id * 3 + 2].visible = false;
+  combo_values[id] = 1;
 }
 
 let human_id = 0;
@@ -282,7 +387,12 @@ class Human {
     this.hat_on_head = true;
 
     // location
-    this.x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
+    let x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
+    while (-200 < x && x < SCREEN_W + 200) {
+      x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
+    }
+
+    this.x = x;
     this.y = getRandomInt(SCREEN_H - 450, SCREEN_H - 350);
     this.base_y = this.y;
     this.y -= 10;
@@ -455,7 +565,6 @@ class Cat {
     this.direction = 0;
     this.scale = 1;
     this.heads = [];
-    this.combo = 1;
   }
 
   addControlKeys(key_up, key_left, key_right) {
@@ -530,7 +639,7 @@ class Cat {
         this.speed_y = 0;
         this.y = FENCE_H;
         this.state = 'ground';
-        this.combo = 1;
+        resetCombo(this.id);
       }
     }
 
@@ -652,13 +761,10 @@ class Cat {
               }
 
               if (!people[this.human].hat_on_head) {
-                this.combo = 1;
+                resetCombo(this.id);
               } else {
                 people[this.human].dropHat(this.speed_x);
-                score[this.id] += this.combo;
-                if (this.combo < 3) {
-                  this.combo += 1;
-                }
+                addScore(this.id);
               }
 
               people[i].cat = this;
