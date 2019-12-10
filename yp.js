@@ -15,6 +15,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human5.png',
   'data/human6.png',
   'data/human7.png',
+  'data/ear.png',
   'data/human1on.png',
   'data/human2on.png',
   'data/human3on.png',
@@ -27,6 +28,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/fence.png',
   'data/hat1.png',
   'data/hat2.png',
+  'data/hat3.png',
   'data/cat_0000_sit.png',
   'data/cat_0001_run1.png',
   'data/cat_0002_run2.png',
@@ -264,7 +266,7 @@ function gameover() {
     }
   }
   if (dither.alpha < 1) {
-    dither.alpha += 0.1;
+    dither.alpha += 0.05;
   } else {
     dither.alpha = 1;
   }
@@ -456,13 +458,15 @@ let human_id = 0;
 var guaranteed_human_left = 2;
 var guaranteed_human_right = 2;
 
+const FRENCH_ID = 7;
+
 class Human {
   constructor() {
     // image
     this.id = human_id++;
     let human_int = 1 + this.id % 7; // change this number when more humans added
-    this.sprite = g.sprite('data/human' + human_int + '.png', 256, 512);
-    this.sprite_on = g.sprite('data/human' + human_int + 'on.png', 256, 512);
+    this.sprite = g.sprite('data/human' + human_int + '.png');
+    this.sprite_on = g.sprite('data/human' + human_int + 'on.png');
     this.sprite_on.visible = false;
 
     this.sprite.anchor.set(0.5, 0);
@@ -470,6 +474,12 @@ class Human {
     g.stage.addChild(this.sprite);
 
     this.makeHat();
+
+    if (1 + this.id % 7 == FRENCH_ID) {
+      this.sprite_ear = g.sprite('data/ear.png');
+      this.sprite_ear.anchor.set(0.5, 0);
+    }
+
     this.hat_on_head = true;
 
     // location
@@ -503,16 +513,21 @@ class Human {
       this.sprite.scale.x = -1;
       this.sprite_on.scale.x = -1;
       this.hat_sprite.scale.x = -1;
+      if (this.sprite_ear) this.sprite_ear.scale.x = -1;
     } else {
       this.direction = 'right';
     }
   }
 
   makeHat() {
-    if (Math.random() > 0.5) {
-      this.hat_sprite = g.sprite('data/hat1.png', 512, 512);
+    if (1 + this.id % 7 == FRENCH_ID) {
+      this.hat_sprite = g.sprite('data/hat3.png', 512, 512);
     } else {
-      this.hat_sprite = g.sprite('data/hat2.png', 512, 512);
+      if (Math.random() > 0.5) {
+        this.hat_sprite = g.sprite('data/hat1.png', 512, 512);
+      } else {
+        this.hat_sprite = g.sprite('data/hat2.png', 512, 512);
+      }
     }
     this.hat_sprite.anchor.set(0.5, 0.5);
     g.stage.addChild(this.hat_sprite);
@@ -521,6 +536,9 @@ class Human {
   dropHat(speed_x) {
     this.hat_on_head = false;
     this.hat_speed_x = 2 * speed_x + Math.random() * 20 - 10;
+    if (this.sprite_ear) {
+      this.sprite_ear.visible = false;
+    }
   }
 
   setCat(cat) {
@@ -594,7 +612,7 @@ class Human {
     this.bob();
 
     if (this.hat_on_head == true) {
-      this.hat_sprite.rotation = (this.hat_sprite.y - this.sprite.y) / 100;
+      this.hat_sprite.rotation = (this.hat_sprite.y - this.sprite.y) / 200;
       this.hat_sprite.x = this.sprite.x;
       this.hat_sprite.y = this.sprite.y;
     } else {
@@ -603,11 +621,15 @@ class Human {
       this.hat_sprite.y += 10;
       this.hat_sprite.rotation += this.hat_speed_x / 100;
     }
-
+      const HEAD_OFFSET_Y = -10;
       this.sprite.x = this.x;
-      this.sprite.y = this.y;
+      this.sprite.y = this.y + HEAD_OFFSET_Y;
       this.sprite_on.x = this.x;
-      this.sprite_on.y = this.y;
+      this.sprite_on.y = this.y + HEAD_OFFSET_Y;
+      if (this.sprite_ear) {
+        this.sprite_ear.x = this.x;
+        this.sprite_ear.y = this.y + HEAD_OFFSET_Y;
+      }
   }
 }
 
