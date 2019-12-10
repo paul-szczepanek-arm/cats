@@ -148,8 +148,8 @@ function splash() {
   if (splash_timer > 120) {
     if (splash_screen.alpha < 1) {
       splash_screen.alpha += 0.01;
-      splash_screen.y -= 4;
-      title_screen.y -= 2;
+      splash_screen.y -= 4.5;
+      title_screen.y -= 3.5;
       if (bkgd0.y > 0) {
         bkgd0.y = bkgd.y = 0.98 * bkgd0.y;
         if (bkgd0.y < 1) {
@@ -236,6 +236,11 @@ function play() {
 var mouse_down_game_over = false;
 var dither;
 var game_over;
+var hats_dropped = 0;
+var end_score1;
+var end_score2;
+var end_score3;
+var end_score4;
 
 function gameover() {
   updateScore();
@@ -252,6 +257,15 @@ function gameover() {
 
     rupert.anim.stopAnimation();
     carl.anim.stopAnimation();
+    let score_string1 = "You dehatted " + (hats_dropped ? hats_dropped : "no") + " people" + (hats_dropped ? "" : " - you lazy cat!");
+    end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 130);
+    end_score2 = g.text("YOU SCORED", "60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + -10);
+    end_score3 = g.text((score[0] + score[1]), "80px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 70);
+    end_score4 = g.text("POINTS", "60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 150);
+    end_score1.anchor.set(0.5, 0.5);
+    end_score2.anchor.set(0.5, 0.5);
+    end_score3.anchor.set(0.5, 0.5);
+    end_score4.anchor.set(0.5, 0.5);
   }
 
   if (pointer.isDown && !mouse_down) {
@@ -385,7 +399,7 @@ function updateScore() {
       score_bg1.anchor.set(0.5, 0.5);
       score_bg1.x = 260;
       score_bg1.y = 80;
-      score_display1 = g.text("score", "40px sans", "black", SCREEN_W / 2, 100);
+      score_display1 = g.text("score", "40px sans", "white", SCREEN_W / 2, 100);
       score_display1.x = 260;
       score_display1.y = 80;
       score_display1.anchor.set(0.5, 0.5);
@@ -399,7 +413,7 @@ function updateScore() {
       score_bg2.anchor.set(0.5, 0.5);
       score_bg2.x = SCREEN_W - 260;
       score_bg2.y = 80;
-      score_display2 = g.text("score", "40px sans", "black", SCREEN_W / 2, 200);
+      score_display2 = g.text("score", "40px sans", "white", SCREEN_W / 2, 200);
       score_display2.x = SCREEN_W - 260;
       score_display2.y = 80;
       score_display2.anchor.set(0.5, 0.5);
@@ -412,10 +426,10 @@ function updateScore() {
         if (points[index].alpha < 0.95) {
           points[index].alpha -= 0.05;
         } else {
-          points[index].alpha -= 0.0025;
+          points[index].alpha -= 0.002;
         }
         points[index].scale.x = points[index].scale.y += 0.005;
-        points[index].y -= 1;
+        points[index].y -= 2;
       }
   }
 }
@@ -534,6 +548,7 @@ class Human {
   }
 
   dropHat(speed_x) {
+    hats_dropped++;
     this.hat_on_head = false;
     this.hat_speed_x = 2 * speed_x + Math.random() * 20 - 10;
     if (this.sprite_ear) {

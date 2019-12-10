@@ -129,7 +129,7 @@ input[type="text"]{ background-color: #c5a8aa; padding: 10px 20px; line-height: 
     for ($i = 0; $i < count($lines); $i+=3) {
     ?>
     <tr>
-      <td width="40px"; style="color: #946366; padding:20px; font-size: 60px; text-shadow: 3px 2px #665b6a">
+      <td width="40px"; style="color: #946366; padding:20px; font-size: 35px; text-shadow: 3px 2px #665b6a">
         <?php
         echo($i / 3 + 1);
         ?>
