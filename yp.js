@@ -46,7 +46,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0014_prep.png',
   'data/splash.png',
   'data/score.png',
-  'data/rank.png',
+  'data/rank1.png',
   'data/title.png',
   'data/time_bar1.png',
   'data/time_bar2.png',
@@ -81,6 +81,7 @@ var people = [];
 var splash_screen;
 var title_screen;
 var bkgd0;
+var lights;
 
 function setup() {
   pointer = t.makePointer();
@@ -104,6 +105,10 @@ function setup() {
   splash_screen.anchor.set(0.5, 0.5);
   title_screen.anchor.set(0.5, 0.5);
   splash_screen.alpha = 0;
+
+  lights = g.sprite('data/rank1.png');
+  lights.x = 0;
+  lights.y = 0;
 
   g.state = splash;
 }
@@ -162,6 +167,7 @@ function splash() {
       if (fence.y > SCREEN_H - 85) {
         fence.y -= 1;
       }
+      lights.y -= 4
     }
   } else {
     splash_timer += 1;
@@ -185,6 +191,7 @@ function play() {
   }
 
   if (fence.y > SCREEN_H - 85) {
+    lights.visible = false;
     fence.y -= 5;
   }
 
@@ -347,16 +354,16 @@ function createScore() {
   points[1] = g.sprite('data/point2.png');
   points[2] = g.sprite('data/point3.png');
   points[3] = g.sprite('data/point4.png');
-  points[4+0] = g.sprite('data/point1.png');
-  points[4+1] = g.sprite('data/point2.png');
-  points[4+2] = g.sprite('data/point3.png');
-  points[4+3] = g.sprite('data/point4.png');
+  points[4 + 0] = g.sprite('data/point1.png');
+  points[4 + 1] = g.sprite('data/point2.png');
+  points[4 + 2] = g.sprite('data/point3.png');
+  points[4 + 3] = g.sprite('data/point4.png');
   combos[0] = g.sprite('data/p1.png');
   combos[1] = g.sprite('data/p2.png');
   combos[2] = g.sprite('data/p3.png');
-  combos[0+3] = g.sprite('data/p1.png');
-  combos[1+3] = g.sprite('data/p2.png');
-  combos[2+3] = g.sprite('data/p3.png');
+  combos[0 + 3] = g.sprite('data/p1.png');
+  combos[1 + 3] = g.sprite('data/p2.png');
+  combos[2 + 3] = g.sprite('data/p3.png');
   resetCombo(0);
   resetCombo(1);
   for (let index = 0; index < 6; ++index) {
@@ -366,7 +373,7 @@ function createScore() {
     combos[index].x = 440;
   }
   for (let index = 0; index < 3; ++index) {
-    combos[index+3].x = SCREEN_W - 440 - 92;
+    combos[index + 3].x = SCREEN_W - 440 - 92;
   }
   for (let index = 0; index < 8; ++index) {
     points[index].y = SCORE_Y;
@@ -378,7 +385,7 @@ function createScore() {
     points[index].x = 360;
   }
   for (let index = 0; index < 4; ++index) {
-    points[index+4].x = SCREEN_W - 360 - 92;
+    points[index + 4].x = SCREEN_W - 360 - 92;
   }
   combo_labels[0].x = 0;
   combo_labels[0].y = COMBO_Y;
@@ -426,15 +433,15 @@ function updateScore() {
   }
 
   for (let index = 0; index < points.length; ++index) {
-      if (points[index].alpha > 0) {
-        if (points[index].alpha < 0.95) {
-          points[index].alpha -= 0.05;
-        } else {
-          points[index].alpha -= 0.002;
-        }
-        points[index].scale.x = points[index].scale.y += 0.005;
-        points[index].y -= 2;
+    if (points[index].alpha > 0) {
+      if (points[index].alpha < 0.95) {
+        points[index].alpha -= 0.05;
+      } else {
+        points[index].alpha -= 0.002;
       }
+      points[index].scale.x = points[index].scale.y += 0.005;
+      points[index].y -= 2;
+    }
   }
 }
 
@@ -640,15 +647,15 @@ class Human {
       this.hat_sprite.y += 10;
       this.hat_sprite.rotation += this.hat_speed_x / 100;
     }
-      const HEAD_OFFSET_Y = -10;
-      this.sprite.x = this.x;
-      this.sprite.y = this.y + HEAD_OFFSET_Y;
-      this.sprite_on.x = this.x;
-      this.sprite_on.y = this.y + HEAD_OFFSET_Y;
-      if (this.sprite_ear) {
-        this.sprite_ear.x = this.x;
-        this.sprite_ear.y = this.y + HEAD_OFFSET_Y;
-      }
+    const HEAD_OFFSET_Y = -10;
+    this.sprite.x = this.x;
+    this.sprite.y = this.y + HEAD_OFFSET_Y;
+    this.sprite_on.x = this.x;
+    this.sprite_on.y = this.y + HEAD_OFFSET_Y;
+    if (this.sprite_ear) {
+      this.sprite_ear.x = this.x;
+      this.sprite_ear.y = this.y + HEAD_OFFSET_Y;
+    }
   }
 }
 
