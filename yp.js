@@ -46,6 +46,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/cat_0014_prep.png',
   'data/splash.png',
   'data/score.png',
+  'data/rank.png',
   'data/rank1.png',
   'data/title.png',
   'data/time_bar1.png',
@@ -82,6 +83,8 @@ var splash_screen;
 var title_screen;
 var bkgd0;
 var lights;
+var catsit;
+var catjump;
 
 function setup() {
   pointer = t.makePointer();
@@ -101,7 +104,7 @@ function setup() {
 
   splash_screen.x = title_screen.x = SCREEN_W / 2;
   splash_screen.y = 1100;
-  title_screen.y = 430;
+  title_screen.y = 510;
   splash_screen.anchor.set(0.5, 0.5);
   title_screen.anchor.set(0.5, 0.5);
   splash_screen.alpha = 0;
@@ -109,6 +112,13 @@ function setup() {
   lights = g.sprite('data/rank1.png');
   lights.x = 0;
   lights.y = 0;
+
+  catsit = g.sprite('data/cat_0000_sit.png');
+  catjump = g.sprite('data/cat_0002_run2.png');
+  catjump.y = catsit.y = 167;
+  catsit.x = 1380;
+  catjump.x = 1480;
+  catjump.visible = false;
 
   g.state = splash;
 }
@@ -168,6 +178,14 @@ function splash() {
         fence.y -= 1;
       }
       lights.y -= 4
+      catsit.y -= 3.5;
+      catjump.y -= 3.5;
+    } else {
+      if (catsit.y > -400) {
+        catsit.visible = false;
+        catjump.visible = true;
+        catjump.y -= 12;
+      }
     }
   } else {
     splash_timer += 1;
@@ -192,6 +210,8 @@ function play() {
 
   if (fence.y > SCREEN_H - 85) {
     lights.visible = false;
+    catsit.visible = false;
+    catjump.visible = false;
     fence.y -= 5;
   }
 
@@ -267,7 +287,7 @@ function gameover() {
     rupert.anim.stopAnimation();
     carl.anim.stopAnimation();
     let score_string1 = "You dehatted " + (hats_dropped ? hats_dropped : "no") + " people" + (hats_dropped ? "" : " - you lazy cat!");
-    end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 130);
+    end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 150);
     end_score2 = g.text("YOU SCORED", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + -10);
     end_score3 = g.text((score[0] + score[1]), "bold 80px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 70);
     end_score4 = g.text("POINTS", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 150);
