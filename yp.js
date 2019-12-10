@@ -266,7 +266,7 @@ function gameover() {
     }
   }
   if (dither.alpha < 1) {
-    dither.alpha += 0.1;
+    dither.alpha += 0.05;
   } else {
     dither.alpha = 1;
   }
