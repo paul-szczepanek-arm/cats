@@ -612,7 +612,7 @@ class Human {
     this.bob();
 
     if (this.hat_on_head == true) {
-      this.hat_sprite.rotation = (this.hat_sprite.y - this.sprite.y) / 100;
+      this.hat_sprite.rotation = (this.hat_sprite.y - this.sprite.y) / 200;
       this.hat_sprite.x = this.sprite.x;
       this.hat_sprite.y = this.sprite.y;
     } else {
