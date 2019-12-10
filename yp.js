@@ -15,6 +15,13 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human5.png',
   'data/human6.png',
   'data/human7.png',
+  'data/human1on.png',
+  'data/human2on.png',
+  'data/human3on.png',
+  'data/human4on.png',
+  'data/human5on.png',
+  'data/human6on.png',
+  'data/human7on.png',
   'data/bg.png',
   'data/bg0.png',
   'data/fence.png',
@@ -84,9 +91,6 @@ function setup() {
   rupert.addControlKeys(87, 65, 68);
   carl.addControlKeys(73, 74, 76);
 
-  bkgd0.x = bkgd0.y = 0;
-  bkgd0.scale.x = bkgd0.scale.y = (1080 / 512);
-
   splash_screen = g.sprite('data/splash.png');
   title_screen = g.sprite('data/title.png');
 
@@ -144,6 +148,16 @@ function splash() {
       splash_screen.alpha += 0.01;
       splash_screen.y -= 4;
       title_screen.y -= 2;
+      if (bkgd0.y > 0) {
+        bkgd0.y = bkgd.y = 0.98 * bkgd0.y;
+        if (bkgd0.y < 1) {
+          bkgd0.y = bkgd.y = 0;
+        }
+      }
+
+      if (fence.y > SCREEN_H - 85) {
+        fence.y -= 1;
+      }
     }
   } else {
     splash_timer += 1;
@@ -156,8 +170,20 @@ var carl_playing = false;
 
 function play() {
   if (bkgd0.alpha > 0) {
-    bkgd0.alpha -= 0.05;
+    bkgd0.alpha -= 0.025;
   }
+
+  if (bkgd0.y > 0) {
+    bkgd0.y = bkgd.y = 0.9 * bkgd0.y;
+    if (bkgd0.y < 1) {
+      bkgd0.y = bkgd.y = 0;
+    }
+  }
+
+  if (fence.y > SCREEN_H - 85) {
+    fence.y -= 5;
+  }
+
   t.update();
 
   if (pointer.isUp && mouse_down) {
@@ -210,6 +236,7 @@ var dither;
 var game_over;
 
 function gameover() {
+  updateScore();
   t.update();
 
   if (!game_over) {
@@ -247,9 +274,9 @@ function createStage() {
   bkgd = g.sprite('data/bg.png');
   bkgd0 = g.sprite('data/bg0.png');
 
-  bkgd.x = 0;
-  bkgd.y = 0;
-  bkgd.scale.x = bkgd.scale.y = (1080 / 512);
+  bkgd.x = bkgd0.x = 0;
+  bkgd.y = bkgd0.y = 400;
+  bkgd0.scale.x = bkgd0.scale.y = bkgd.scale.x = bkgd.scale.y = (1080 / 512);
 
   for (let k = 0; k < 30; k++) {
     people.push(new Human());
@@ -259,7 +286,7 @@ function createStage() {
 
 
   fence.x = 0;
-  fence.y = SCREEN_H - 86;
+  fence.y = SCREEN_H;
 
   for (let i = 0; i < people.length; i++) {
     people[i].update();
@@ -323,7 +350,7 @@ function createScore() {
   for (let index = 0; index < 3; ++index) {
     combos[index+3].x = SCREEN_W - 440 - 92;
   }
-  for (let index = 0; index < 6; ++index) {
+  for (let index = 0; index < 8; ++index) {
     points[index].y = SCORE_Y;
     points[index].alpha = 0;
     points[index].visible = false;
@@ -426,23 +453,38 @@ function resetCombo(id) {
 
 let human_id = 0;
 
+var guaranteed_human_left = 2;
+var guaranteed_human_right = 2;
+
 class Human {
   constructor() {
     // image
     this.id = human_id++;
     let human_int = 1 + this.id % 7; // change this number when more humans added
     this.sprite = g.sprite('data/human' + human_int + '.png', 256, 512);
+    this.sprite_on = g.sprite('data/human' + human_int + 'on.png', 256, 512);
+    this.sprite_on.visible = false;
 
     this.sprite.anchor.set(0.5, 0);
+    this.sprite_on.anchor.set(0.5, 0);
     g.stage.addChild(this.sprite);
 
     this.makeHat();
     this.hat_on_head = true;
 
     // location
-    let x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
-    while (-200 < x && x < SCREEN_W + 200) {
+    let x;
+    if (guaranteed_human_left) {
+      guaranteed_human_left--;
+      x = getRandomInt(0 - SCREEN_W - 700, -200);
+    } else if (guaranteed_human_right) {
+      guaranteed_human_right--;
+      x = getRandomInt(SCREEN_W + 200, SCREEN_W + 700);
+    } else {
       x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
+      while (-200 < x && x < SCREEN_W + 200) {
+        x = getRandomInt(-PEOPLE_OFF_SCREEN, SCREEN_W + PEOPLE_OFF_SCREEN);
+      }
     }
 
     this.x = x;
@@ -459,6 +501,7 @@ class Human {
     if (Math.random() > 0.5) {
       this.direction = 'left';
       this.sprite.scale.x = -1;
+      this.sprite_on.scale.x = -1;
       this.hat_sprite.scale.x = -1;
     } else {
       this.direction = 'right';
@@ -478,6 +521,13 @@ class Human {
   dropHat(speed_x) {
     this.hat_on_head = false;
     this.hat_speed_x = 2 * speed_x + Math.random() * 20 - 10;
+  }
+
+  setCat(cat) {
+    this.cat = cat;
+
+    this.sprite_on.visible = (null != this.cat);
+    this.sprite.visible = (null == this.cat);
   }
 
   walk() {
@@ -554,8 +604,10 @@ class Human {
       this.hat_sprite.rotation += this.hat_speed_x / 100;
     }
 
-    this.sprite.x = this.x;
-    this.sprite.y = this.y;
+      this.sprite.x = this.x;
+      this.sprite.y = this.y;
+      this.sprite_on.x = this.x;
+      this.sprite_on.y = this.y;
   }
 }
 
@@ -674,7 +726,7 @@ class Cat {
 
   jump() {
     if (this.state == 'head') {
-      people[this.human].cat = undefined;
+      people[this.human].setCat(null);
     }
 
     if (this.state == 'head' || this.state == 'ground') {
@@ -745,6 +797,7 @@ class Cat {
       // if human going offscreen fall
       if (this.x < SCREEN_MARGIN || this.x > SCREEN_W - SCREEN_MARGIN) {
         this.state = 'fall';
+        people[this.human].setCat(null);
       }
     }
   }
@@ -820,7 +873,7 @@ class Cat {
                 addScore(this.id);
               }
 
-              people[i].cat = this;
+              people[i].setCat(this);
 
               this.speed_y = 0;
               this.state = 'head';
