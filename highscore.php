@@ -129,24 +129,24 @@ input[type="text"]{ background-color: #c5a8aa; padding: 10px 20px; line-height: 
     for ($i = 0; $i < count($lines); $i+=3) {
     ?>
     <tr>
-      <td width="40px"; style="color: #946366; padding:20px; font-size: 35px; text-shadow: 3px 2px #665b6a">
+      <td width="40px"; style="color: #946366; padding:30px; font-size: 40px; text-shadow: 3px 2px #665b6a">
         <?php
         echo($i / 3 + 1);
         ?>
       </td>
-      <td width="200px"; style="color: #946366; padding:20px; font-size: 40px; text-align: right">
+      <td width="200px"; style="color: #946366; padding:20px; font-size: 45px; text-align: right">
 
     <?php
     echo($lines[$i]);
     ?>
       </td>
-      <td width="30%"; style="color: #946366; padding:20px; font-size: 40px;">
+      <td width="30%"; style="color: #946366; padding:20px; font-size: 45px;">
 
     <?php
     echo($lines[$i+1]);
     ?>
       </td>
-      <td width="70%"; style="color: #665b6a; font-size: 30px;">
+      <td width="70%"; style="color: #665b6a; font-size: 40px;">
 
     <?php
     echo($lines[$i+2]);
@@ -157,7 +157,9 @@ input[type="text"]{ background-color: #c5a8aa; padding: 10px 20px; line-height: 
     }
     ?>
   </table>
+  <br><br><br><br>
   </td>
+
 </tr>
 <tr style="background-color: #c5a8aa;">
   <td class="bottomimg">

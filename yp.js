@@ -72,6 +72,8 @@ var rupert;
 var carl;
 var score_display1;
 var score_display2;
+var score_display1_label;
+var score_display2_label;
 var score = [0, 0];
 var bkgd;
 var fence;
@@ -259,9 +261,9 @@ function gameover() {
     carl.anim.stopAnimation();
     let score_string1 = "You dehatted " + (hats_dropped ? hats_dropped : "no") + " people" + (hats_dropped ? "" : " - you lazy cat!");
     end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 130);
-    end_score2 = g.text("YOU SCORED", "60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + -10);
-    end_score3 = g.text((score[0] + score[1]), "80px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 70);
-    end_score4 = g.text("POINTS", "60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 150);
+    end_score2 = g.text("YOU SCORED", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + -10);
+    end_score3 = g.text((score[0] + score[1]), "bold 80px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 70);
+    end_score4 = g.text("POINTS", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 150);
     end_score1.anchor.set(0.5, 0.5);
     end_score2.anchor.set(0.5, 0.5);
     end_score3.anchor.set(0.5, 0.5);
@@ -399,12 +401,13 @@ function updateScore() {
       score_bg1.anchor.set(0.5, 0.5);
       score_bg1.x = 260;
       score_bg1.y = 80;
-      score_display1 = g.text("score", "40px sans", "white", SCREEN_W / 2, 100);
-      score_display1.x = 260;
-      score_display1.y = 80;
-      score_display1.anchor.set(0.5, 0.5);
+      score_display1 = g.text("0", "bold 42px arial", "white", SCREEN_W / 2, 100);
+      score_display1_label = g.text("RUPERT", "bold 42px arial", "#946366", SCREEN_W / 2, 100);
+      score_display1.x = 340;
+      score_display1_label.x = 120;
+      score_display1_label.y = score_display1.y = 56;
     }
-    score_display1.content = "RUPERT " + score[0];
+    score_display1.content = score[0];
   }
 
   if (carl_playing) {
@@ -413,12 +416,13 @@ function updateScore() {
       score_bg2.anchor.set(0.5, 0.5);
       score_bg2.x = SCREEN_W - 260;
       score_bg2.y = 80;
-      score_display2 = g.text("score", "40px sans", "white", SCREEN_W / 2, 200);
-      score_display2.x = SCREEN_W - 260;
-      score_display2.y = 80;
-      score_display2.anchor.set(0.5, 0.5);
+      score_display2 = g.text("score", "bold 42px arial", "white", SCREEN_W / 2, 200);
+      score_display2_label = g.text("CARL", "bold 42px arial", "#946366", SCREEN_W / 2, 100);
+      score_display2.x = SCREEN_W - 180;
+      score_display2_label.x = SCREEN_W - 390;
+      score_display2_label.y = score_display2.y = 56;
     }
-    score_display2.content = "CARL " + score[1];
+    score_display2.content = score[1];
   }
 
   for (let index = 0; index < points.length; ++index) {
