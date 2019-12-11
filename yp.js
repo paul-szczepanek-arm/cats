@@ -15,6 +15,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human5.png',
   'data/human6.png',
   'data/human7.png',
+  'data/human8.png',
   'data/ear.png',
   'data/human1on.png',
   'data/human2on.png',
@@ -23,6 +24,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/human5on.png',
   'data/human6on.png',
   'data/human7on.png',
+  'data/human8on.png',
   'data/bg.png',
   'data/bg0.png',
   'data/fence.png',
@@ -509,7 +511,7 @@ class Human {
   constructor() {
     // image
     this.id = human_id++;
-    let human_int = 1 + this.id % 7; // change this number when more humans added
+    let human_int = 1 + this.id % 8; // change this number when more humans added
     this.sprite = g.sprite('data/human' + human_int + '.png');
     this.sprite_on = g.sprite('data/human' + human_int + 'on.png');
     this.sprite_on.visible = false;
