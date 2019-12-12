@@ -704,23 +704,43 @@ class Cat {
       this.x = SCREEN_W / 2 + 200;
     }
 
-    this.anim = g.sprite([
-      'data/cat_0000_sit.png',
-      'data/cat_0001_run1.png',
-      'data/cat_0002_run2.png',
-      'data/cat_0003_run3.png',
-      'data/cat_0004_run4.png',
-      'data/cat_0005_run5.png',
-      'data/cat_0006_run6.png',
-      'data/cat_0007_stand1.png',
-      'data/cat_0008_stand2.png',
-      'data/cat_0009_stand3.png',
-      'data/cat_0010_stand4.png',
-      'data/cat_0011_turn.png',
-      'data/cat_0012_stop1.png',
-      'data/cat_0013_stop2.png',
-      'data/cat_0014_prep.png',
-    ]);
+    if (this.id == 0) {
+      this.anim = g.sprite([
+        'data/cat_0000_sit.png',
+        'data/cat_0001_run1.png',
+        'data/cat_0002_run2.png',
+        'data/cat_0003_run3.png',
+        'data/cat_0004_run4.png',
+        'data/cat_0005_run5.png',
+        'data/cat_0006_run6.png',
+        'data/cat_0007_stand1.png',
+        'data/cat_0008_stand2.png',
+        'data/cat_0009_stand3.png',
+        'data/cat_0010_stand4.png',
+        'data/cat_0011_turn.png',
+        'data/cat_0012_stop1.png',
+        'data/cat_0013_stop2.png',
+        'data/cat_0014_prep.png',
+      ]);
+    } else {
+      this.anim = g.sprite([
+        'data/cat2_0000_sit.png',
+        'data/cat2_0001_run1.png',
+        'data/cat2_0002_run2.png',
+        'data/cat2_0003_run3.png',
+        'data/cat2_0004_run4.png',
+        'data/cat2_0005_run5.png',
+        'data/cat2_0006_run6.png',
+        'data/cat2_0007_stand1.png',
+        'data/cat2_0008_stand2.png',
+        'data/cat2_0009_stand3.png',
+        'data/cat2_0010_stand4.png',
+        'data/cat2_0011_turn.png',
+        'data/cat2_0012_stop1.png',
+        'data/cat2_0013_stop2.png',
+        'data/cat2_0014_prep.png',
+      ]);
+    }
 
     this.anim.anchor.set(0.5, 1);
     this.anim.show(CAT_ANIM_STAND);
