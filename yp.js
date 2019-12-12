@@ -511,7 +511,7 @@ class Human {
   constructor() {
     // image
     this.id = human_id++;
-    let human_int = 1 + this.id % 8; // change this number when more humans added
+    this.id = 1 + (this.id % 8); // change this number when more humans added
     this.sprite = g.sprite('data/human' + human_int + '.png');
     this.sprite_on = g.sprite('data/human' + human_int + 'on.png');
     this.sprite_on.visible = false;
@@ -567,7 +567,7 @@ class Human {
   }
 
   makeHat() {
-    if ((1 + this.id % 7) == FRENCH_ID) {
+    if (this.id == FRENCH_ID) {
       this.hat_sprite = g.sprite('data/hat3.png', 512, 512);
     } else {
       if (Math.random() > 0.5) {
