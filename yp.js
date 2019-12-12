@@ -520,7 +520,7 @@ class Human {
 
     this.makeHat();
 
-    if (1 + this.id % 7 == FRENCH_ID) {
+    if (human_int == FRENCH_ID) {
       this.sprite_ear = g.sprite('data/ear.png');
       this.sprite_ear.anchor.set(0.5, 0);
     }
@@ -565,7 +565,7 @@ class Human {
   }
 
   makeHat() {
-    if (1 + this.id % 7 == FRENCH_ID) {
+    if ((1 + this.id % 7) == FRENCH_ID) {
       this.hat_sprite = g.sprite('data/hat3.png', 512, 512);
     } else {
       if (Math.random() > 0.5) {
