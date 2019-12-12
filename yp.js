@@ -512,8 +512,8 @@ class Human {
     // image
     this.id = human_id++;
     this.id = 1 + (this.id % 8); // change this number when more humans added
-    this.sprite = g.sprite('data/human' + human_int + '.png');
-    this.sprite_on = g.sprite('data/human' + human_int + 'on.png');
+    this.sprite = g.sprite('data/human' + this.id + '.png');
+    this.sprite_on = g.sprite('data/human' + this.id + 'on.png');
     this.sprite_on.visible = false;
 
     this.sprite.anchor.set(0.5, 0);
@@ -522,7 +522,7 @@ class Human {
 
     this.makeHat();
 
-    if (human_int == FRENCH_ID) {
+    if (this.id == FRENCH_ID) {
       this.sprite_ear = g.sprite('data/ear.png');
       this.sprite_ear.anchor.set(0.5, 0);
     }
