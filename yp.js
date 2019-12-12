@@ -130,6 +130,10 @@ function setup() {
 
 var popup = false;
 
+function retry() {
+  window.location.reload(false);
+}
+
 function highScore() {
   var mapForm = document.createElement("form");
   mapForm.target = "_blank";
@@ -154,9 +158,10 @@ var mouse_down;
 const MOUSE_JUMP_LINE = SCREEN_H - 250;
 var mouse_below_line;
 var splash_timer = 0;
+const SPLASH_TIMER_MIN = 160;
 
 function splash() {
-  if (pointer.isDown) {
+  if (pointer.isDown && splash_timer > SPLASH_TIMER_MIN) {
     mouse_down = true;
   }
 
@@ -167,7 +172,9 @@ function splash() {
     g.state = play;
   }
 
-  if (splash_timer > 120) {
+  splash_timer += 1;
+
+  if (splash_timer > 60) {
     if (splash_screen.alpha < 1) {
       splash_screen.alpha += 0.01;
       splash_screen.y -= 4.5;
@@ -192,8 +199,6 @@ function splash() {
         catjump.y -= 12;
       }
     }
-  } else {
-    splash_timer += 1;
   }
 
 }
@@ -306,13 +311,20 @@ function gameover() {
     mouse_down_game_over = true;
   }
 
-  if (pointer.isUp) {
-    mouse_down = false;
-    if (mouse_down_game_over && !popup) {
-      popup = true;
-      highScore();
+  if (pointer.y > SCREEN_H / 2) {
+    if (pointer.isUp) {
+      mouse_down = false;
+      if (mouse_down_game_over && !popup) {
+        popup = true;
+        if (pointer.x < SCREEN_W / 2) {
+          highScore();
+        } else {
+          retry();
+        }
+      }
     }
   }
+
   if (dither.alpha < 1) {
     dither.alpha += 0.05;
   } else {
@@ -349,7 +361,7 @@ var score_bg2;
 var time_bar_bg;
 var time_bar;
 const MAX_TIME = 60;
-var timer = 5;
+var timer = MAX_TIME;
 
 var points = [];
 var combos = [];
