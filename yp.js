@@ -136,7 +136,7 @@ function retry() {
 
 function highScore() {
   var mapForm = document.createElement("form");
-  mapForm.target = "_blank";
+  mapForm.target = "_top";
   mapForm.method = "POST";
   mapForm.action = "highscore.php";
 
@@ -169,6 +169,9 @@ function splash() {
     splash_screen.visible = false;
     title_screen.visible = false;
     createScore();
+    lights.visible = false;
+    catsit.visible = false;
+    catjump.visible = false;
     g.state = play;
   }
 
@@ -219,9 +222,6 @@ function play() {
   }
 
   if (fence.y > SCREEN_H - 85) {
-    lights.visible = false;
-    catsit.visible = false;
-    catjump.visible = false;
     fence.y -= 5;
   }
 
