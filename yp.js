@@ -277,6 +277,7 @@ var dither;
 var game_over;
 var hats_dropped = 0;
 var end_score1;
+var end_score1b;
 var end_score2;
 var end_score3;
 var end_score4;
@@ -297,7 +298,14 @@ function gameover() {
     rupert.anim.stopAnimation();
     carl.anim.stopAnimation();
     let score_string1 = "You dehatted " + (hats_dropped ? hats_dropped : "no") + " people" + (hats_dropped ? "" : " - you lazy cat!");
-    end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 150);
+    if (carl_playing && rupert_playing && (score[0] != score[1])) {
+      let winner = score[0] > score[1] ? "Rupert":"Carl";
+      let loser = score[0] < score[1] ? "Rupert":"Carl";
+      let score_string1b = "\n" + winner + " beat " + loser + " by " + Math.abs(score[0] - score[1]) + " points";
+      end_score1b = g.text(score_string1b, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 130);
+      end_score1b.anchor.set(0.5, 0.5);
+    }
+    end_score1 = g.text(score_string1, "50px sans", "white", SCREEN_W / 2, SCREEN_H / 2 - 180);
     end_score2 = g.text("YOU SCORED", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + -10);
     end_score3 = g.text((score[0] + score[1]), "bold 80px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 70);
     end_score4 = g.text("POINTS", "bold 60px sans", "white", SCREEN_W / 2, SCREEN_H / 2 + 150);
@@ -518,12 +526,12 @@ function addScore(id) {
   } else {
     x = carl.x;
   }
-  points[combo_values[id] + id * 3 - 1].alpha = 1;
-  points[combo_values[id] + id * 3 - 1].visible = true;
-  points[combo_values[id] + id * 3 - 1].y = 500;
-  points[combo_values[id] + id * 3 - 1].x = x;
-  points[combo_values[id] + id * 3 - 1].scale.x = 1;
-  points[combo_values[id] + id * 3 - 1].scale.y = 1;
+  points[combo_values[id] + id * 4 - 1].alpha = 1;
+  points[combo_values[id] + id * 4 - 1].visible = true;
+  points[combo_values[id] + id * 4 - 1].y = 500;
+  points[combo_values[id] + id * 4 - 1].x = x;
+  points[combo_values[id] + id * 4 - 1].scale.x = 1;
+  points[combo_values[id] + id * 4 - 1].scale.y = 1;
   score[id] += combo_values[id];
   if (combo_values[id] < 4) {
     combo_values[id] += 1;
