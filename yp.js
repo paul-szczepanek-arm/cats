@@ -62,6 +62,9 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/point4.png',
   'data/combo.png',
   'data/dither.png',
+  'data/count1.png',
+  'data/count2.png',
+  'data/count3.png',
 ]);
 
 g.start();
@@ -346,7 +349,7 @@ var score_bg2;
 var time_bar_bg;
 var time_bar;
 const MAX_TIME = 60;
-var timer = MAX_TIME;
+var timer = 5;
 
 var points = [];
 var combos = [];
@@ -354,6 +357,8 @@ var combo_labels = [];
 
 const COMBO_Y = 120;
 const SCORE_Y = 40;
+
+var counts = [];
 
 function createScore() {
   time_bar_bg = g.sprite('data/time_bar1.png');
@@ -413,6 +418,16 @@ function createScore() {
   combo_labels[0].y = COMBO_Y;
   combo_labels[1].x = SCREEN_W - 440;
   combo_labels[1].y = COMBO_Y;
+
+  counts[0] = g.sprite('data/count1.png');
+  counts[1] = g.sprite('data/count2.png');
+  counts[2] = g.sprite('data/count3.png');
+  for (let index = 0; index < 3; ++index) {
+    counts[index].x = SCREEN_W / 2;
+    counts[index].y = SCREEN_H / 2 - 200;
+    counts[index].anchor.set(0.5, 0.5);
+    counts[index].visible = false;
+  }
 }
 
 function updateTime() {
@@ -420,6 +435,21 @@ function updateTime() {
   time_bar.width = 900 * (timer / MAX_TIME);
   if (timer <= 0) {
     g.state = gameover;
+  }
+
+  if (timer < 5){
+    for (let index = 0; index < 3; ++index) {
+      if (timer < index + 2 && timer > index + 1) {
+        counts[index].scale.x = counts[index].scale.y = (timer - index) * (timer - index);
+        counts[index].alpha = 2 - (timer - index);
+        counts[index].visible = true;
+      } else if (timer < index + 1 && timer > index) {
+        counts[index].scale.x = counts[index].scale.y = (timer - index) / 4 + 0.75;
+        counts[index].alpha *= 0.97;
+      } else {
+        counts[index].visible = false;
+      }
+    }
   }
 }
 
