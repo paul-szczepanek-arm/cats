@@ -375,7 +375,7 @@ var points = [];
 var combos = [];
 var combo_labels = [];
 
-const COMBO_Y = 120;
+const COMBO_Y = SCREEN_H - 80;
 const SCORE_Y = 40;
 
 var counts = [];
@@ -417,10 +417,10 @@ function createScore() {
     combos[index].y = COMBO_Y;
   }
   for (let index = 0; index < 3; ++index) {
-    combos[index].x = 440;
+    combos[index].x = 450;
   }
   for (let index = 0; index < 3; ++index) {
-    combos[index + 3].x = SCREEN_W - 440 - 92;
+    combos[index + 3].x = SCREEN_W - 450 - 92;
   }
   for (let index = 0; index < 8; ++index) {
     points[index].y = SCORE_Y;
@@ -434,9 +434,9 @@ function createScore() {
   for (let index = 0; index < 4; ++index) {
     points[index + 4].x = SCREEN_W - 360 - 92;
   }
-  combo_labels[0].x = 0;
+  combo_labels[0].x = 10;
   combo_labels[0].y = COMBO_Y;
-  combo_labels[1].x = SCREEN_W - 440;
+  combo_labels[1].x = SCREEN_W - 450;
   combo_labels[1].y = COMBO_Y;
 
   counts[0] = g.sprite('data/count1.png');
