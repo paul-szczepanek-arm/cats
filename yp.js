@@ -126,6 +126,26 @@ function setup() {
   catjump.visible = false;
 
   g.state = splash;
+
+  /*document.documentElement.onclick = function(e){
+    openFullscreen();
+  }*/
+}
+
+var full = false;
+function openFullscreen() {
+  if (full) return;
+  full = true;
+  let elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
 }
 
 var popup = false;
