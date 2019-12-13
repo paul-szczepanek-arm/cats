@@ -55,6 +55,7 @@
   if (isset($_POST['form_submitted'])):
     $name = $_POST['score_name'];
 
+    $name = filter_var($name, FILTER_SANITIZE_STRING);
     $name = trim($name);
 
     if(isset($name) === true && $name === ''):
@@ -63,6 +64,7 @@
 
     $name = preg_replace('/\s+/', ' ', $name);
     $message = $_POST['score_message'];
+    $message = filter_var($message, FILTER_SANITIZE_STRING);
     $message = preg_replace('/\s+/', ' ', trim($message));
 
     $scores = "";
@@ -111,7 +113,7 @@
     </tr>
     <?php
       $new_game = True;
-      
+
   else:
 
       if (isset($_POST['score'])):
