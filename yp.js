@@ -956,7 +956,7 @@ class Cat {
     } else {
       // copy human position
       this.x = people[this.human].x;
-      this.y = people[this.human].y;
+      this.y = people[this.human].y + 5;
       // if human going offscreen fall
       if (this.x < SCREEN_MARGIN || this.x > SCREEN_W - SCREEN_MARGIN) {
         this.state = 'fall';
