@@ -31,6 +31,7 @@ var g = hexi(SCREEN_W, SCREEN_H, setup, [
   'data/hat1.png',
   'data/hat2.png',
   'data/hat3.png',
+  'data/hat4.png',
   'data/cat_0000_sit.png',
   'data/cat_0001_run1.png',
   'data/cat_0002_run2.png',
@@ -640,10 +641,12 @@ class Human {
     if (this.id == FRENCH_ID) {
       this.hat_sprite = g.sprite('data/hat3.png', 512, 512);
     } else {
-      if (Math.random() > 0.5) {
+      if (Math.random() > 0.666) {
         this.hat_sprite = g.sprite('data/hat1.png', 512, 512);
-      } else {
+      } else if (Math.random() > 0.333) {
         this.hat_sprite = g.sprite('data/hat2.png', 512, 512);
+      } else {
+        this.hat_sprite = g.sprite('data/hat4.png', 512, 512);
       }
     }
     this.hat_sprite.anchor.set(0.5, 0.5);
